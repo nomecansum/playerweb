@@ -1,0 +1,358 @@
+object main: Tmain
+  Left = 0
+  Top = 0
+  Caption = 'playerWEB.exe'
+  ClientHeight = 624
+  ClientWidth = 1038
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object btn_popup: TJvTransparentButton
+    Left = 0
+    Top = 0
+    Width = 20
+    Height = 20
+    Caption = 'btn_popup'
+    OnClick = btn_popupClick
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 2
+    Height = 2
+    BevelOuter = bvNone
+    Caption = 'Panel1'
+    Color = clBackground
+    Ctl3D = False
+    ParentBackground = False
+    ParentCtl3D = False
+    TabOrder = 0
+    OnClick = btn_popupClick
+  end
+  object panelimg: TPanel
+    Left = 0
+    Top = 0
+    Width = 1038
+    Height = 352
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 1
+    Visible = False
+    object img1: TAdvOfficeImage
+      Left = 0
+      Top = 0
+      Width = 1038
+      Height = 352
+      Align = alClient
+      Stretch = True
+      Version = '1.1.1.0'
+      ExplicitLeft = 320
+      ExplicitTop = 64
+      ExplicitWidth = 128
+      ExplicitHeight = 128
+    end
+  end
+  object panelweb: TPanel
+    Left = 0
+    Top = 0
+    Width = 1038
+    Height = 352
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 2
+    object split1: TAdvSplitter
+      Left = 0
+      Top = 347
+      Width = 1038
+      Height = 5
+      Cursor = crVSplit
+      Align = alBottom
+      Appearance.BorderColor = clNone
+      Appearance.BorderColorHot = clNone
+      Appearance.Color = 3552822
+      Appearance.ColorTo = 3552822
+      Appearance.ColorHot = 6974058
+      Appearance.ColorHotTo = 6974058
+      GripStyle = sgDots
+      ExplicitLeft = 8
+      ExplicitTop = 389
+    end
+    object CEFWindowParent1: TCEFWindowParent
+      Left = 0
+      Top = 0
+      Width = 1038
+      Height = 347
+      Align = alClient
+      TabOrder = 0
+    end
+  end
+  object panel_debug: TPanel
+    Left = 0
+    Top = 352
+    Width = 1038
+    Height = 272
+    Align = alBottom
+    Caption = 'panel_debug'
+    TabOrder = 3
+    object mTTY: TRichEdit
+      Left = 1
+      Top = 1
+      Width = 631
+      Height = 270
+      Align = alClient
+      Font.Charset = ANSI_CHARSET
+      Font.Color = 4473924
+      Font.Height = -11
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      Lines.Strings = (
+        'mTTY')
+      ParentFont = False
+      TabOrder = 0
+      Zoom = 100
+    end
+    object playlist: TAdvListView
+      Left = 632
+      Top = 1
+      Width = 405
+      Height = 270
+      Align = alRight
+      Columns = <
+        item
+          Caption = 'Tiempo'
+          Width = 100
+        end
+        item
+          Caption = 'URL'
+          Width = 300
+        end>
+      TabOrder = 1
+      ViewStyle = vsReport
+      FilterTimeOut = 0
+      PrintSettings.DateFormat = 'dd/mm/yyyy'
+      PrintSettings.Font.Charset = DEFAULT_CHARSET
+      PrintSettings.Font.Color = clWindowText
+      PrintSettings.Font.Height = -11
+      PrintSettings.Font.Name = 'Tahoma'
+      PrintSettings.Font.Style = []
+      PrintSettings.HeaderFont.Charset = DEFAULT_CHARSET
+      PrintSettings.HeaderFont.Color = clWindowText
+      PrintSettings.HeaderFont.Height = -11
+      PrintSettings.HeaderFont.Name = 'Tahoma'
+      PrintSettings.HeaderFont.Style = []
+      PrintSettings.FooterFont.Charset = DEFAULT_CHARSET
+      PrintSettings.FooterFont.Color = clWindowText
+      PrintSettings.FooterFont.Height = -11
+      PrintSettings.FooterFont.Name = 'Tahoma'
+      PrintSettings.FooterFont.Style = []
+      PrintSettings.PageNumSep = '/'
+      HeaderFont.Charset = DEFAULT_CHARSET
+      HeaderFont.Color = clWindowText
+      HeaderFont.Height = -11
+      HeaderFont.Name = 'Tahoma'
+      HeaderFont.Style = []
+      ProgressSettings.ValueFormat = '%d%%'
+      DetailView.Font.Charset = DEFAULT_CHARSET
+      DetailView.Font.Color = clBlue
+      DetailView.Font.Height = -11
+      DetailView.Font.Name = 'Tahoma'
+      DetailView.Font.Style = []
+      Version = '1.7.4.4'
+      ExplicitHeight = 269
+    end
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 300
+    OnTimer = Timer1Timer
+    Left = 48
+    Top = 128
+  end
+  object Chromium1: TChromium
+    OnLoadStart = Chromium1LoadStart
+    OnLoadEnd = Chromium1LoadEnd
+    OnAfterCreated = Chromium1AfterCreated
+    OnBeforeClose = Chromium1BeforeClose
+    OnClose = Chromium1Close
+    OnPopupShow = Chromium1PopupShow
+    Left = 48
+    Top = 176
+  end
+  object pop1: TAdvPopupMenu
+    MenuStyler = AdvMenuStyler1
+    Version = '2.7.1.4'
+    UIStyle = tsCustom
+    Left = 880
+    Top = 88
+    object Debug1: TMenuItem
+      Caption = 'Debug'
+      OnClick = Debug1Click
+    end
+    object Cerrar1: TMenuItem
+      Caption = 'Cerrar'
+      OnClick = Cerrar1Click
+    end
+    object Refrescar1: TMenuItem
+      Caption = 'Refrescar'
+      OnClick = Refrescar1Click
+    end
+    object Check1: TMenuItem
+      Caption = 'Check'
+      OnClick = Check1Click
+    end
+    object Infp1: TMenuItem
+      Caption = 'Info'
+      OnClick = Infp1Click
+    end
+    object Recolocarventana1: TMenuItem
+      Caption = 'Recolocar ventana'
+      OnClick = Recolocarventana1Click
+    end
+    object Ponernegro1: TMenuItem
+      Caption = 'Poner en negro'
+      OnClick = Ponernegro1Click
+    end
+  end
+  object AdvMenuStyler1: TAdvMenuStyler
+    AntiAlias = aaNone
+    Background.Position = bpCenter
+    Background.Color = cl3DDkShadow
+    IconBar.Color = cl3DDkShadow
+    IconBar.ColorTo = cl3DDkShadow
+    SelectedItem.Font.Charset = DEFAULT_CHARSET
+    SelectedItem.Font.Color = clWindowText
+    SelectedItem.Font.Height = -12
+    SelectedItem.Font.Name = 'Segoe UI'
+    SelectedItem.Font.Style = []
+    SelectedItem.NotesFont.Charset = DEFAULT_CHARSET
+    SelectedItem.NotesFont.Color = clWindowText
+    SelectedItem.NotesFont.Height = -9
+    SelectedItem.NotesFont.Name = 'Segoe UI'
+    SelectedItem.NotesFont.Style = []
+    RootItem.Font.Charset = DEFAULT_CHARSET
+    RootItem.Font.Color = clWindowText
+    RootItem.Font.Height = -12
+    RootItem.Font.Name = 'Segoe UI'
+    RootItem.Font.Style = []
+    Glyphs.SubMenu.Data = {
+      5A000000424D5A000000000000003E0000002800000004000000070000000100
+      0100000000001C0000000000000000000000020000000200000000000000FFFF
+      FF0070000000300000001000000000000000100000003000000070000000}
+    Glyphs.Check.Data = {
+      7E000000424D7E000000000000003E0000002800000010000000100000000100
+      010000000000400000000000000000000000020000000200000000000000FFFF
+      FF00FFFF0000FFFF0000FFFF0000FFFF0000FDFF0000F8FF0000F07F0000F23F
+      0000F71F0000FF8F0000FFCF0000FFEF0000FFFF0000FFFF0000FFFF0000FFFF
+      0000}
+    Glyphs.Radio.Data = {
+      7E000000424D7E000000000000003E0000002800000010000000100000000100
+      010000000000400000000000000000000000020000000200000000000000FFFF
+      FF00FFFF0000FFFF0000FFFF0000FFFF0000FFFF0000FC3F0000F81F0000F81F
+      0000F81F0000F81F0000FC3F0000FFFF0000FFFF0000FFFF0000FFFF0000FFFF
+      0000}
+    SideBar.Font.Charset = DEFAULT_CHARSET
+    SideBar.Font.Color = clWhite
+    SideBar.Font.Height = -19
+    SideBar.Font.Name = 'Tahoma'
+    SideBar.Font.Style = [fsBold, fsItalic]
+    SideBar.Image.Position = bpCenter
+    SideBar.Background.Position = bpCenter
+    SideBar.SplitterColorTo = clBlack
+    Separator.GradientType = gtBoth
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clYellow
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    NotesFont.Charset = DEFAULT_CHARSET
+    NotesFont.Color = clGray
+    NotesFont.Height = -9
+    NotesFont.Name = 'Segoe UI'
+    NotesFont.Style = []
+    MenuBorderColor = clBackground
+    ButtonAppearance.CaptionFont.Charset = DEFAULT_CHARSET
+    ButtonAppearance.CaptionFont.Color = clWindowText
+    ButtonAppearance.CaptionFont.Height = -11
+    ButtonAppearance.CaptionFont.Name = 'Segoe UI'
+    ButtonAppearance.CaptionFont.Style = []
+    Left = 968
+    Top = 88
+  end
+  object AdvFormStyler1: TAdvFormStyler
+    Style = tsOffice2016Black
+    AppStyle = AdvAppStyler1
+    Left = 984
+    Top = 168
+  end
+  object AdvAppStyler1: TAdvAppStyler
+    Style = tsOffice2016Black
+    Left = 992
+    Top = 264
+  end
+  object tmr_refresco: TTimer
+    Enabled = False
+    Interval = 300
+    OnTimer = tmr_refrescoTimer
+    Left = 48
+    Top = 272
+  end
+  object mqtt2: TTMSMQTTClient
+    BrokerHostName = 'localhost'
+    KeepAliveSettings.AutoReconnect = True
+    OnConnectedStatusChanged = mqtt2ConnectedStatusChanged
+    OnPublishReceived = mqtt2PublishReceived
+    Version = '1.2.0.2'
+    Left = 917
+    Top = 88
+  end
+  object clHttp1: TclHttp
+    UserAgent = 'Mozilla/4.0 (compatible; Clever Internet Suite)'
+    Left = 920
+    Top = 152
+  end
+  object tmr_info: TTimer
+    Enabled = False
+    Interval = 900000
+    OnTimer = Timer1Timer
+    Left = 48
+    Top = 320
+  end
+  object tmr_check: TTimer
+    Enabled = False
+    Interval = 60000
+    OnTimer = tmr_checkTimer
+    Left = 48
+    Top = 368
+  end
+  object tmr_inicio: TTimer
+    Interval = 3000
+    OnTimer = tmr_inicioTimer
+    Left = 48
+    Top = 224
+  end
+  object req1: TclHttpRequest
+    Header.ContentType = 'application/json'
+    Header.ExtraFields.Strings = (
+      'apikey=123465')
+    Header.Accept = '*/*'
+    Left = 922
+    Top = 208
+  end
+  object tmr_play: TTimer
+    Enabled = False
+    Interval = 60000
+    OnTimer = tmr_playTimer
+    Left = 48
+    Top = 424
+  end
+end
