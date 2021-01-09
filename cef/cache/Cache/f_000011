@@ -1,609 +1,513 @@
-/*! jQuery UI - v1.12.1 - 2017-11-07
-* http://jqueryui.com
-* Includes: draggable.css, core.css, resizable.css, selectable.css, sortable.css, theme.css
-* To view and modify this theme, visit http://jqueryui.com/themeroller/?scope=&folderName=base&cornerRadiusShadow=8px&offsetLeftShadow=0px&offsetTopShadow=0px&thicknessShadow=5px&opacityShadow=30&bgImgOpacityShadow=0&bgTextureShadow=flat&bgColorShadow=666666&opacityOverlay=30&bgImgOpacityOverlay=0&bgTextureOverlay=flat&bgColorOverlay=aaaaaa&iconColorError=cc0000&fcError=5f3f3f&borderColorError=f1a899&bgTextureError=flat&bgColorError=fddfdf&iconColorHighlight=777620&fcHighlight=777620&borderColorHighlight=dad55e&bgTextureHighlight=flat&bgColorHighlight=fffa90&iconColorActive=ffffff&fcActive=ffffff&borderColorActive=003eff&bgTextureActive=flat&bgColorActive=007fff&iconColorHover=555555&fcHover=2b2b2b&borderColorHover=cccccc&bgTextureHover=flat&bgColorHover=ededed&iconColorDefault=777777&fcDefault=454545&borderColorDefault=c5c5c5&bgTextureDefault=flat&bgColorDefault=f6f6f6&iconColorContent=444444&fcContent=333333&borderColorContent=dddddd&bgTextureContent=flat&bgColorContent=ffffff&iconColorHeader=444444&fcHeader=333333&borderColorHeader=dddddd&bgTextureHeader=flat&bgColorHeader=e9e9e9&cornerRadius=3px&fwDefault=normal&fsDefault=1em&ffDefault=Arial%2CHelvetica%2Csans-serif
-* Copyright jQuery Foundation and other contributors; Licensed MIT */
-
-.ui-draggable-handle {
-	-ms-touch-action: none;
-	touch-action: none;
-}
-/* Layout helpers
-----------------------------------*/
-.ui-helper-hidden {
-	display: none;
-}
-.ui-helper-hidden-accessible {
-	border: 0;
-	clip: rect(0 0 0 0);
-	height: 1px;
-	margin: -1px;
-	overflow: hidden;
-	padding: 0;
-	position: absolute;
-	width: 1px;
-}
-.ui-helper-reset {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	outline: 0;
-	line-height: 1.3;
-	text-decoration: none;
-	font-size: 100%;
-	list-style: none;
-}
-.ui-helper-clearfix:before,
-.ui-helper-clearfix:after {
-	content: "";
-	display: table;
-	border-collapse: collapse;
-}
-.ui-helper-clearfix:after {
-	clear: both;
-}
-.ui-helper-zfix {
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	position: absolute;
-	opacity: 0;
-	filter:Alpha(Opacity=0); /* support: IE8 */
-}
-
-.ui-front {
-	z-index: 100;
-}
+// Nifty-demo.js
+// ====================================================================
+// Set user options for current page.
+// This file is only used for demonstration purposes.
+// ====================================================================
+// - ThemeOn.net -
 
 
-/* Interaction Cues
-----------------------------------*/
-.ui-state-disabled {
-	cursor: default !important;
-	pointer-events: none;
-}
+$(document).on('nifty.ready', function () {
 
 
-/* Icons
-----------------------------------*/
-.ui-icon {
-	display: inline-block;
-	vertical-align: middle;
-	margin-top: -.25em;
-	position: relative;
-	text-indent: -99999px;
-	overflow: hidden;
-	background-repeat: no-repeat;
-}
+    // SETTINGS WINDOW
+    // =================================================================
+    var contentIndi = '<div id="demo-settings-load" class="demo-settings-load"><i class="text-main demo-pli-repeat-2 icon-3x fa-spin"></i><br><h4 id="demo-get-status" class="text-bold text-uppercase">Loading...</h4><p id="demo-get-status-text">Please wait while the content is loaded</p></div>';
+    //var settingsComp = '<div id="demo-nifty-settings" class="demo-nifty-settings"><button id="demo-set-btn" class="btn"><i class="demo-psi-gear"></i></button><div id="demo-set-content" class="demo-set-content"></div></div>';
+    var settingsComp ='';
+    //$("body").append(settingsComp);
 
-.ui-widget-icon-block {
-	left: 50%;
-	margin-left: -8px;
-	display: block;
-}
-
-/* Misc visuals
-----------------------------------*/
-
-/* Overlays */
-.ui-widget-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-}
-.ui-resizable {
-	position: relative;
-}
-.ui-resizable-handle {
-	position: absolute;
-	font-size: 0.1px;
-	display: block;
-	-ms-touch-action: none;
-	touch-action: none;
-}
-.ui-resizable-disabled .ui-resizable-handle,
-.ui-resizable-autohide .ui-resizable-handle {
-	display: none;
-}
-.ui-resizable-n {
-	cursor: n-resize;
-	height: 7px;
-	width: 100%;
-	top: -5px;
-	left: 0;
-}
-.ui-resizable-s {
-	cursor: s-resize;
-	height: 7px;
-	width: 100%;
-	bottom: -5px;
-	left: 0;
-}
-.ui-resizable-e {
-	cursor: e-resize;
-	width: 7px;
-	right: -5px;
-	top: 0;
-	height: 100%;
-}
-.ui-resizable-w {
-	cursor: w-resize;
-	width: 7px;
-	left: -5px;
-	top: 0;
-	height: 100%;
-}
-.ui-resizable-se {
-	cursor: se-resize;
-	width: 12px;
-	height: 12px;
-	right: 1px;
-	bottom: 1px;
-}
-.ui-resizable-sw {
-	cursor: sw-resize;
-	width: 9px;
-	height: 9px;
-	left: -5px;
-	bottom: -5px;
-}
-.ui-resizable-nw {
-	cursor: nw-resize;
-	width: 9px;
-	height: 9px;
-	left: -5px;
-	top: -5px;
-}
-.ui-resizable-ne {
-	cursor: ne-resize;
-	width: 9px;
-	height: 9px;
-	right: -5px;
-	top: -5px;
-}
-.ui-selectable {
-	-ms-touch-action: none;
-	touch-action: none;
-}
-.ui-selectable-helper {
-	position: absolute;
-	z-index: 100;
-	border: 1px dotted black;
-}
-.ui-sortable-handle {
-	-ms-touch-action: none;
-	touch-action: none;
-}
-
-/* Component containers
-----------------------------------*/
-.ui-widget {
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 1em;
-}
-.ui-widget .ui-widget {
-	font-size: 1em;
-}
-.ui-widget input,
-.ui-widget select,
-.ui-widget textarea,
-.ui-widget button {
-	font-family: Arial,Helvetica,sans-serif;
-	font-size: 1em;
-}
-.ui-widget.ui-widget-content {
-	border: 1px solid #c5c5c5;
-}
-.ui-widget-content {
-	border: 1px solid #dddddd;
-	background: #ffffff;
-	color: #333333;
-}
-.ui-widget-content a {
-	color: #333333;
-}
-.ui-widget-header {
-	border: 1px solid #dddddd;
-	background: #e9e9e9;
-	color: #333333;
-	font-weight: bold;
-}
-.ui-widget-header a {
-	color: #333333;
-}
-
-/* Interaction states
-----------------------------------*/
-.ui-state-default,
-.ui-widget-content .ui-state-default,
-.ui-widget-header .ui-state-default,
-.ui-button,
-
-/* We use html here because we need a greater specificity to make sure disabled
-works properly when clicked or hovered */
-html .ui-button.ui-state-disabled:hover,
-html .ui-button.ui-state-disabled:active {
-	border: 1px solid #c5c5c5;
-	background: #f6f6f6;
-	font-weight: normal;
-	color: #454545;
-}
-.ui-state-default a,
-.ui-state-default a:link,
-.ui-state-default a:visited,
-a.ui-button,
-a:link.ui-button,
-a:visited.ui-button,
-.ui-button {
-	color: #454545;
-	text-decoration: none;
-}
-.ui-state-hover,
-.ui-widget-content .ui-state-hover,
-.ui-widget-header .ui-state-hover,
-.ui-state-focus,
-.ui-widget-content .ui-state-focus,
-.ui-widget-header .ui-state-focus,
-.ui-button:hover,
-.ui-button:focus {
-	border: 1px solid #cccccc;
-	background: #ededed;
-	font-weight: normal;
-	color: #2b2b2b;
-}
-.ui-state-hover a,
-.ui-state-hover a:hover,
-.ui-state-hover a:link,
-.ui-state-hover a:visited,
-.ui-state-focus a,
-.ui-state-focus a:hover,
-.ui-state-focus a:link,
-.ui-state-focus a:visited,
-a.ui-button:hover,
-a.ui-button:focus {
-	color: #2b2b2b;
-	text-decoration: none;
-}
-
-.ui-visual-focus {
-	box-shadow: 0 0 3px 1px rgb(94, 158, 214);
-}
-.ui-state-active,
-.ui-widget-content .ui-state-active,
-.ui-widget-header .ui-state-active,
-a.ui-button:active,
-.ui-button:active,
-.ui-button.ui-state-active:hover {
-	border: 1px solid #003eff;
-	background: #007fff;
-	font-weight: normal;
-	color: #ffffff;
-}
-.ui-icon-background,
-.ui-state-active .ui-icon-background {
-	border: #003eff;
-	background-color: #ffffff;
-}
-.ui-state-active a,
-.ui-state-active a:link,
-.ui-state-active a:visited {
-	color: #ffffff;
-	text-decoration: none;
-}
-
-/* Interaction Cues
-----------------------------------*/
-.ui-state-highlight,
-.ui-widget-content .ui-state-highlight,
-.ui-widget-header .ui-state-highlight {
-	border: 1px solid #dad55e;
-	background: #fffa90;
-	color: #777620;
-}
-.ui-state-checked {
-	border: 1px solid #dad55e;
-	background: #fffa90;
-}
-.ui-state-highlight a,
-.ui-widget-content .ui-state-highlight a,
-.ui-widget-header .ui-state-highlight a {
-	color: #777620;
-}
-.ui-state-error,
-.ui-widget-content .ui-state-error,
-.ui-widget-header .ui-state-error {
-	border: 1px solid #f1a899;
-	background: #fddfdf;
-	color: #5f3f3f;
-}
-.ui-state-error a,
-.ui-widget-content .ui-state-error a,
-.ui-widget-header .ui-state-error a {
-	color: #5f3f3f;
-}
-.ui-state-error-text,
-.ui-widget-content .ui-state-error-text,
-.ui-widget-header .ui-state-error-text {
-	color: #5f3f3f;
-}
-.ui-priority-primary,
-.ui-widget-content .ui-priority-primary,
-.ui-widget-header .ui-priority-primary {
-	font-weight: bold;
-}
-.ui-priority-secondary,
-.ui-widget-content .ui-priority-secondary,
-.ui-widget-header .ui-priority-secondary {
-	opacity: .7;
-	filter:Alpha(Opacity=70); /* support: IE8 */
-	font-weight: normal;
-}
-.ui-state-disabled,
-.ui-widget-content .ui-state-disabled,
-.ui-widget-header .ui-state-disabled {
-	opacity: .35;
-	filter:Alpha(Opacity=35); /* support: IE8 */
-	background-image: none;
-}
-.ui-state-disabled .ui-icon {
-	filter:Alpha(Opacity=35); /* support: IE8 - See #6059 */
-}
-
-/* Icons
-----------------------------------*/
-
-/* states and images */
-.ui-icon {
-	width: 16px;
-	height: 16px;
-}
-.ui-icon,
-.ui-widget-content .ui-icon {
-	background-image: url("images/ui-icons_444444_256x240.png");
-}
-.ui-widget-header .ui-icon {
-	background-image: url("images/ui-icons_444444_256x240.png");
-}
-.ui-state-hover .ui-icon,
-.ui-state-focus .ui-icon,
-.ui-button:hover .ui-icon,
-.ui-button:focus .ui-icon {
-	background-image: url("images/ui-icons_555555_256x240.png");
-}
-.ui-state-active .ui-icon,
-.ui-button:active .ui-icon {
-	background-image: url("images/ui-icons_ffffff_256x240.png");
-}
-.ui-state-highlight .ui-icon,
-.ui-button .ui-state-highlight.ui-icon {
-	background-image: url("images/ui-icons_777620_256x240.png");
-}
-.ui-state-error .ui-icon,
-.ui-state-error-text .ui-icon {
-	background-image: url("images/ui-icons_cc0000_256x240.png");
-}
-.ui-button .ui-icon {
-	background-image: url("images/ui-icons_777777_256x240.png");
-}
-
-/* positioning */
-.ui-icon-blank { background-position: 16px 16px; }
-.ui-icon-caret-1-n { background-position: 0 0; }
-.ui-icon-caret-1-ne { background-position: -16px 0; }
-.ui-icon-caret-1-e { background-position: -32px 0; }
-.ui-icon-caret-1-se { background-position: -48px 0; }
-.ui-icon-caret-1-s { background-position: -65px 0; }
-.ui-icon-caret-1-sw { background-position: -80px 0; }
-.ui-icon-caret-1-w { background-position: -96px 0; }
-.ui-icon-caret-1-nw { background-position: -112px 0; }
-.ui-icon-caret-2-n-s { background-position: -128px 0; }
-.ui-icon-caret-2-e-w { background-position: -144px 0; }
-.ui-icon-triangle-1-n { background-position: 0 -16px; }
-.ui-icon-triangle-1-ne { background-position: -16px -16px; }
-.ui-icon-triangle-1-e { background-position: -32px -16px; }
-.ui-icon-triangle-1-se { background-position: -48px -16px; }
-.ui-icon-triangle-1-s { background-position: -65px -16px; }
-.ui-icon-triangle-1-sw { background-position: -80px -16px; }
-.ui-icon-triangle-1-w { background-position: -96px -16px; }
-.ui-icon-triangle-1-nw { background-position: -112px -16px; }
-.ui-icon-triangle-2-n-s { background-position: -128px -16px; }
-.ui-icon-triangle-2-e-w { background-position: -144px -16px; }
-.ui-icon-arrow-1-n { background-position: 0 -32px; }
-.ui-icon-arrow-1-ne { background-position: -16px -32px; }
-.ui-icon-arrow-1-e { background-position: -32px -32px; }
-.ui-icon-arrow-1-se { background-position: -48px -32px; }
-.ui-icon-arrow-1-s { background-position: -65px -32px; }
-.ui-icon-arrow-1-sw { background-position: -80px -32px; }
-.ui-icon-arrow-1-w { background-position: -96px -32px; }
-.ui-icon-arrow-1-nw { background-position: -112px -32px; }
-.ui-icon-arrow-2-n-s { background-position: -128px -32px; }
-.ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }
-.ui-icon-arrow-2-e-w { background-position: -160px -32px; }
-.ui-icon-arrow-2-se-nw { background-position: -176px -32px; }
-.ui-icon-arrowstop-1-n { background-position: -192px -32px; }
-.ui-icon-arrowstop-1-e { background-position: -208px -32px; }
-.ui-icon-arrowstop-1-s { background-position: -224px -32px; }
-.ui-icon-arrowstop-1-w { background-position: -240px -32px; }
-.ui-icon-arrowthick-1-n { background-position: 1px -48px; }
-.ui-icon-arrowthick-1-ne { background-position: -16px -48px; }
-.ui-icon-arrowthick-1-e { background-position: -32px -48px; }
-.ui-icon-arrowthick-1-se { background-position: -48px -48px; }
-.ui-icon-arrowthick-1-s { background-position: -64px -48px; }
-.ui-icon-arrowthick-1-sw { background-position: -80px -48px; }
-.ui-icon-arrowthick-1-w { background-position: -96px -48px; }
-.ui-icon-arrowthick-1-nw { background-position: -112px -48px; }
-.ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }
-.ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }
-.ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }
-.ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }
-.ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }
-.ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }
-.ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }
-.ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }
-.ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }
-.ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }
-.ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }
-.ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }
-.ui-icon-arrowreturn-1-w { background-position: -64px -64px; }
-.ui-icon-arrowreturn-1-n { background-position: -80px -64px; }
-.ui-icon-arrowreturn-1-e { background-position: -96px -64px; }
-.ui-icon-arrowreturn-1-s { background-position: -112px -64px; }
-.ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }
-.ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }
-.ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }
-.ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }
-.ui-icon-arrow-4 { background-position: 0 -80px; }
-.ui-icon-arrow-4-diag { background-position: -16px -80px; }
-.ui-icon-extlink { background-position: -32px -80px; }
-.ui-icon-newwin { background-position: -48px -80px; }
-.ui-icon-refresh { background-position: -64px -80px; }
-.ui-icon-shuffle { background-position: -80px -80px; }
-.ui-icon-transfer-e-w { background-position: -96px -80px; }
-.ui-icon-transferthick-e-w { background-position: -112px -80px; }
-.ui-icon-folder-collapsed { background-position: 0 -96px; }
-.ui-icon-folder-open { background-position: -16px -96px; }
-.ui-icon-document { background-position: -32px -96px; }
-.ui-icon-document-b { background-position: -48px -96px; }
-.ui-icon-note { background-position: -64px -96px; }
-.ui-icon-mail-closed { background-position: -80px -96px; }
-.ui-icon-mail-open { background-position: -96px -96px; }
-.ui-icon-suitcase { background-position: -112px -96px; }
-.ui-icon-comment { background-position: -128px -96px; }
-.ui-icon-person { background-position: -144px -96px; }
-.ui-icon-print { background-position: -160px -96px; }
-.ui-icon-trash { background-position: -176px -96px; }
-.ui-icon-locked { background-position: -192px -96px; }
-.ui-icon-unlocked { background-position: -208px -96px; }
-.ui-icon-bookmark { background-position: -224px -96px; }
-.ui-icon-tag { background-position: -240px -96px; }
-.ui-icon-home { background-position: 0 -112px; }
-.ui-icon-flag { background-position: -16px -112px; }
-.ui-icon-calendar { background-position: -32px -112px; }
-.ui-icon-cart { background-position: -48px -112px; }
-.ui-icon-pencil { background-position: -64px -112px; }
-.ui-icon-clock { background-position: -80px -112px; }
-.ui-icon-disk { background-position: -96px -112px; }
-.ui-icon-calculator { background-position: -112px -112px; }
-.ui-icon-zoomin { background-position: -128px -112px; }
-.ui-icon-zoomout { background-position: -144px -112px; }
-.ui-icon-search { background-position: -160px -112px; }
-.ui-icon-wrench { background-position: -176px -112px; }
-.ui-icon-gear { background-position: -192px -112px; }
-.ui-icon-heart { background-position: -208px -112px; }
-.ui-icon-star { background-position: -224px -112px; }
-.ui-icon-link { background-position: -240px -112px; }
-.ui-icon-cancel { background-position: 0 -128px; }
-.ui-icon-plus { background-position: -16px -128px; }
-.ui-icon-plusthick { background-position: -32px -128px; }
-.ui-icon-minus { background-position: -48px -128px; }
-.ui-icon-minusthick { background-position: -64px -128px; }
-.ui-icon-close { background-position: -80px -128px; }
-.ui-icon-closethick { background-position: -96px -128px; }
-.ui-icon-key { background-position: -112px -128px; }
-.ui-icon-lightbulb { background-position: -128px -128px; }
-.ui-icon-scissors { background-position: -144px -128px; }
-.ui-icon-clipboard { background-position: -160px -128px; }
-.ui-icon-copy { background-position: -176px -128px; }
-.ui-icon-contact { background-position: -192px -128px; }
-.ui-icon-image { background-position: -208px -128px; }
-.ui-icon-video { background-position: -224px -128px; }
-.ui-icon-script { background-position: -240px -128px; }
-.ui-icon-alert { background-position: 0 -144px; }
-.ui-icon-info { background-position: -16px -144px; }
-.ui-icon-notice { background-position: -32px -144px; }
-.ui-icon-help { background-position: -48px -144px; }
-.ui-icon-check { background-position: -64px -144px; }
-.ui-icon-bullet { background-position: -80px -144px; }
-.ui-icon-radio-on { background-position: -96px -144px; }
-.ui-icon-radio-off { background-position: -112px -144px; }
-.ui-icon-pin-w { background-position: -128px -144px; }
-.ui-icon-pin-s { background-position: -144px -144px; }
-.ui-icon-play { background-position: 0 -160px; }
-.ui-icon-pause { background-position: -16px -160px; }
-.ui-icon-seek-next { background-position: -32px -160px; }
-.ui-icon-seek-prev { background-position: -48px -160px; }
-.ui-icon-seek-end { background-position: -64px -160px; }
-.ui-icon-seek-start { background-position: -80px -160px; }
-/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
-.ui-icon-seek-first { background-position: -80px -160px; }
-.ui-icon-stop { background-position: -96px -160px; }
-.ui-icon-eject { background-position: -112px -160px; }
-.ui-icon-volume-off { background-position: -128px -160px; }
-.ui-icon-volume-on { background-position: -144px -160px; }
-.ui-icon-power { background-position: 0 -176px; }
-.ui-icon-signal-diag { background-position: -16px -176px; }
-.ui-icon-signal { background-position: -32px -176px; }
-.ui-icon-battery-0 { background-position: -48px -176px; }
-.ui-icon-battery-1 { background-position: -64px -176px; }
-.ui-icon-battery-2 { background-position: -80px -176px; }
-.ui-icon-battery-3 { background-position: -96px -176px; }
-.ui-icon-circle-plus { background-position: 0 -192px; }
-.ui-icon-circle-minus { background-position: -16px -192px; }
-.ui-icon-circle-close { background-position: -32px -192px; }
-.ui-icon-circle-triangle-e { background-position: -48px -192px; }
-.ui-icon-circle-triangle-s { background-position: -64px -192px; }
-.ui-icon-circle-triangle-w { background-position: -80px -192px; }
-.ui-icon-circle-triangle-n { background-position: -96px -192px; }
-.ui-icon-circle-arrow-e { background-position: -112px -192px; }
-.ui-icon-circle-arrow-s { background-position: -128px -192px; }
-.ui-icon-circle-arrow-w { background-position: -144px -192px; }
-.ui-icon-circle-arrow-n { background-position: -160px -192px; }
-.ui-icon-circle-zoomin { background-position: -176px -192px; }
-.ui-icon-circle-zoomout { background-position: -192px -192px; }
-.ui-icon-circle-check { background-position: -208px -192px; }
-.ui-icon-circlesmall-plus { background-position: 0 -208px; }
-.ui-icon-circlesmall-minus { background-position: -16px -208px; }
-.ui-icon-circlesmall-close { background-position: -32px -208px; }
-.ui-icon-squaresmall-plus { background-position: -48px -208px; }
-.ui-icon-squaresmall-minus { background-position: -64px -208px; }
-.ui-icon-squaresmall-close { background-position: -80px -208px; }
-.ui-icon-grip-dotted-vertical { background-position: 0 -224px; }
-.ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }
-.ui-icon-grip-solid-vertical { background-position: -32px -224px; }
-.ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
-.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
-.ui-icon-grip-diagonal-se { background-position: -80px -224px; }
+    $('#demo-set-btn').one('click', function(){
+        $("#demo-nifty-settings").addClass("in");
+        $("#demo-set-content").append(contentIndi);
+        $.get("/settings.html", function( data ) {
+            $("#demo-set-content").empty().append(data);
+            settingsInit();
+        }).fail(function(e) {
+            $("#demo-get-status").html(e.status);
+            $("#demo-get-status-text").html(e.statusText);
+        });
+    });
 
 
-/* Misc visuals
-----------------------------------*/
+    //Offcanvas initialize
+    var nav_mode = function(){
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == "offcanvas"){return pair[1];}
+        }
+        return(false);
+    }();
+    if(nav_mode == "push" || nav_mode == "slide" ||nav_mode == "reveal"){
+        $('.mainnav-toggle').removeClass('push slide reveal').addClass(nav_mode);
+        $('#container').removeClass('mainnav-lg mainnav-sm').addClass('mainnav-out '+nav_mode);
+    }
 
-/* Corner radius */
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-left,
-.ui-corner-tl {
-	border-top-left-radius: 3px;
-}
-.ui-corner-all,
-.ui-corner-top,
-.ui-corner-right,
-.ui-corner-tr {
-	border-top-right-radius: 3px;
-}
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-left,
-.ui-corner-bl {
-	border-bottom-left-radius: 3px;
-}
-.ui-corner-all,
-.ui-corner-bottom,
-.ui-corner-right,
-.ui-corner-br {
-	border-bottom-right-radius: 3px;
-}
 
-/* Overlays */
-.ui-widget-overlay {
-	background: #aaaaaa;
-	opacity: .3;
-	filter: Alpha(Opacity=30); /* support: IE8 */
-}
-.ui-widget-shadow {
-	-webkit-box-shadow: 0px 0px 5px #666666;
-	box-shadow: 0px 0px 5px #666666;
-}
+    var settingsInit = function(){
+        var demoSet             = $('#demo-nifty-settings'),
+            niftyContainer      = $('#container'),
+            niftyMainNav        = $('#mainnav-container'),
+            niftyAside          = $('#aside-container'),
+            demoSetBtn          = $('#demo-set-btn');
+
+        // BOXED LAYOUT
+        // =================================================================
+        var boxedLayoutCheckbox     = document.getElementById('demo-box-lay'),
+            boxedLayoutImgBtn       = document.getElementById('demo-box-img'),
+            boxedLayoutImgBox       = $('#demo-bg-boxed'),
+            boxedLayoutBtnClose     = document.getElementById('demo-close-boxed-img'),
+            blurredBgList           = $('#demo-blurred-bg'),
+            polygonBgList           = $('#demo-polygon-bg'),
+            abstractBgList          = $('#demo-abstract-bg');
+
+
+        // Initialize
+        // =================================================================
+        $("#demo-set-tooltip").tooltip();
+
+        if(niftyContainer.hasClass('boxed-layout')){
+            boxedLayoutCheckbox.checked = true;
+            boxedLayoutImgBtn.disabled = false;
+        }else{
+            boxedLayoutCheckbox.checked = false;
+            boxedLayoutImgBtn.disabled = true;
+        }
+
+        if (boxedLayoutImgBox.hasClass('open')) {
+            boxedLayoutImgBtn.checked = true;
+        }else{
+            boxedLayoutImgBtn.checked = false;
+        }
+
+        function bg_thumb_template(cat){
+            var list = '';
+            for (var i = 1; i < 17; i++) {
+                list += '<a href="#" class="thumbnail box-inline"><img class="img-responsive" src="./premium/boxed-bg/'+cat+'/thumbs/'+i+'.jpg" alt="Background Image"></a>';
+            }
+            return list;
+        }
+        function add_bg_thumbs(){
+            blurredBgList.append(bg_thumb_template('blurred'));
+            polygonBgList.append(bg_thumb_template('polygon'));
+            abstractBgList.append(bg_thumb_template('abstract'));
+
+            var boxedBgthumb = boxedLayoutImgBox.find('.thumbnail');
+            boxedBgthumb.on('click', function(){
+                boxedBgthumb.removeClass('selected');
+                var url = $(this).children('img').prop('src').replace('thumbs','bg');
+                $(this).addClass('selected');
+                niftyContainer.css({
+                    'background-image': 'url('+url+')',
+                    'background-repeat': 'no-repeat',
+                    'background-size': 'cover',
+                    'background-attachment': 'fixed'
+                })
+            });
+        }
+
+
+
+        // Boxed Layout Checkbox
+        // =================================================================
+        boxedLayoutCheckbox.onchange = function(){
+            if (boxedLayoutCheckbox.checked) {
+                niftyContainer.addClass('boxed-layout');
+                boxedLayoutImgBtn.disabled = false;
+            } else {
+                niftyContainer.removeClass('boxed-layout').removeAttr( 'style' );
+                boxedLayoutImgBtn.checked = false;
+                boxedLayoutImgBtn.disabled = true;
+                boxedLayoutImgBox.removeClass('open').find('.thumbnail').removeClass('selected');
+            }
+            $(window).trigger('resize');
+        };
+
+        // Image Buttons
+        // =================================================================
+        boxedLayoutImgBtn.onchange = function(){
+            if (boxedLayoutImgBtn.checked) {
+                boxedLayoutImgBox.addClass('open');
+                if(!demoSet.hasClass('hasbgthumbs')){
+                    add_bg_thumbs();
+                    demoSet.addClass('hasbgthumbs')
+                }
+            } else {
+                boxedLayoutImgBox.removeClass('open');
+            }
+        };
+
+        // Close Button
+        // =================================================================
+        boxedLayoutBtnClose.onclick = function(){
+            boxedLayoutImgBox.removeClass('open');
+            boxedLayoutImgBtn.disabled = false;
+            boxedLayoutImgBtn.checked = false;
+        }
+
+
+
+
+
+
+        // TRANSITION EFFECTS
+        // =================================================================
+        // =================================================================
+        var effectList = 'easeInQuart easeOutQuart easeInBack easeOutBack easeInOutBack steps jumping rubber',
+            animCheckbox = document.getElementById('demo-anim'),
+            transitionVal = document.getElementById('demo-ease');
+
+
+        // Initialize
+        // =================================================================
+        if(niftyContainer.hasClass('effect')){
+            animCheckbox.checked = true;
+            transitionVal.disabled = false;
+        }else{
+            animCheckbox.checked = false;
+            transitionVal.disabled = true;
+        }
+
+        // Animations checkbox
+        animCheckbox.onchange = function(){
+            if (animCheckbox.checked) {
+                niftyContainer.addClass('effect');
+                transitionVal.disabled = false;
+                transitionVal.value = 'effect';
+            } else {
+                niftyContainer.removeClass('effect ' + effectList);
+                transitionVal.disabled = true;
+            }
+        };
+
+
+        // Transition selectbox
+        var effectArray = effectList.split(" ");
+        for (i = 0; i < effectArray.length; i++) {
+            if (niftyContainer.hasClass(effectArray[i])){
+                transitionVal.value = effectArray[i];
+                break;
+            }
+        }
+        transitionVal.onchange = function(){
+            var optionSelected = $("option:selected", this);
+            var valueSelected = this.options[this.selectedIndex].value;
+            if (valueSelected) {
+                niftyContainer.removeClass(effectList).addClass(valueSelected);
+            }
+        };
+
+
+
+
+
+        // NAVBAR
+        // =================================================================
+        // =================================================================
+        var navbarFixedCheckbox = document.getElementById('demo-navbar-fixed');
+
+        // Initialize
+        // =================================================================
+        if(niftyContainer.hasClass('navbar-fixed')){
+            navbarFixedCheckbox.checked = true;
+        }else{
+            navbarFixedCheckbox.checked = false;
+        }
+
+        // Fixed Position
+        // =================================================================
+        navbarFixedCheckbox.onchange = function(){
+            if (navbarFixedCheckbox.checked) {
+                niftyContainer.addClass('navbar-fixed');
+            } else {
+                niftyContainer.removeClass('navbar-fixed');
+            }
+
+            // Refresh the aside, to enable or disable the "Bootstrap Affix" when the navbar in a "static position".
+            niftyMainNav.niftyAffix('update');
+            niftyAside.niftyAffix('update');
+        };
+
+
+
+        // FOOTER
+        // =================================================================
+        // =================================================================
+        var footerFixedCheckbox = document.getElementById('demo-footer-fixed');
+
+
+        // Initialize
+        // =================================================================
+        if(niftyContainer.hasClass('footer-fixed')){
+            footerFixedCheckbox.checked = true;
+        }else{
+            footerFixedCheckbox.checked = false;
+        }
+
+        // Fixed Position
+        // =================================================================
+        footerFixedCheckbox.onchange = function(){
+            if (footerFixedCheckbox.checked) {
+                niftyContainer.addClass('footer-fixed');
+            } else {
+                niftyContainer.removeClass('footer-fixed');
+            }
+        };
+
+
+
+
+        // NAVIGATION
+        // =================================================================
+        // =================================================================
+        var collapsedCheckbox   = document.getElementById('demo-nav-coll'),
+            navFixedCheckbox    = document.getElementById('demo-nav-fixed'),
+            navProfileCheckbox  = document.getElementById('demo-nav-profile'),
+            navShortcutCheckbox = document.getElementById('demo-nav-shortcut'),
+            navOffcanvasSB      = document.getElementById('demo-nav-offcanvas'),
+            navProfile          = $('#mainnav-profile'),
+            navShortcut         = $('#mainnav-shortcut');
+
+
+
+        // Initialize
+        // =================================================================
+        if(niftyContainer.hasClass('mainnav-fixed')){
+            navFixedCheckbox.checked = true;
+        }else{
+            navFixedCheckbox.checked = false;
+        }
+
+
+        // Fixed Position
+        // =================================================================
+        if(niftyContainer.hasClass('mainnav-fixed')){
+            navFixedCheckbox.checked = true;
+        } else{
+            navFixedCheckbox.checked = false;
+        }
+        navFixedCheckbox.onchange = function(){
+            if (navFixedCheckbox.checked) {
+                $.niftyNav('fixedPosition');
+            } else {
+                $.niftyNav('staticPosition');
+            }
+        };
+
+
+        // Profile
+        // =================================================================
+        if(navProfile.hasClass('hidden')){
+            navProfileCheckbox.checked = false;
+        } else{
+            navProfileCheckbox.checked = true;
+        }
+        navProfileCheckbox.onchange = function(){
+            navProfile.toggleClass('hidden');
+        };
+
+
+
+        // Shortcut Buttons
+        // =================================================================
+        if(navShortcut.hasClass('hidden')){
+            navShortcutCheckbox.checked = false;
+        } else{
+            navShortcutCheckbox.checked = true;
+        }
+        navShortcutCheckbox.onchange = function(){
+            navShortcut.toggleClass('hidden');
+        };
+
+
+
+        // Collapsing/Expanding Navigation
+        // =================================================================
+        if(niftyContainer.hasClass('mainnav-sm')){
+            collapsedCheckbox.checked = true;
+        }else{
+            collapsedCheckbox.checked = false;
+        }
+        collapsedCheckbox.onchange = function(){
+            if (collapsedCheckbox.checked) {
+                if(navOffcanvasSB.value != 'none'){
+                    navOffcanvasSB.value = 'none';
+                    location.href = location.protocol + '//' + location.host + location.pathname;
+                }
+                $.niftyNav('collapse');
+            } else {
+                $.niftyNav('expand');
+            }
+        };
+
+
+
+        // Offcanvas Navigation
+        // =================================================================
+        navOffcanvasSB.onchange = function(){
+            if (collapsedCheckbox.checked) {
+                collapsedCheckbox.checked = false;
+            }
+            demoSet.removeClass('in');
+
+            location.href = location.protocol + '//' + location.host + location.pathname + '?&offcanvas=' + this.options[this.selectedIndex].value;
+        };
+
+        if(nav_mode == "push" || nav_mode == "slide" ||nav_mode == "reveal"){
+            $('.mainnav-toggle').removeClass('push slide reveal').addClass(nav_mode);
+            navOffcanvasSB.value = nav_mode;
+        }else{
+            if(niftyContainer.hasClass('mainnav-sm')){
+                collapsedCheckbox.checked = true;
+            }else{
+                collapsedCheckbox.checked = false;
+            }
+        }
+
+
+
+
+
+
+
+        // ASIDE
+        // =================================================================
+        // =================================================================
+        var asdVisCheckbox      = document.getElementById('demo-asd-vis'),
+            asdFixedCheckbox    = document.getElementById('demo-asd-fixed'),
+            asdFloatCheckbox    = document.getElementById('demo-asd-float'),
+            asdPosCheckbox      = document.getElementById('demo-asd-align'),
+            asdThemeCheckbox    = document.getElementById('demo-asd-themes');
+
+
+
+
+
+        // Visible
+        // =================================================================
+        if(niftyContainer.hasClass('aside-in')){
+            asdVisCheckbox.checked = true;
+        } else{
+            asdVisCheckbox.checked = false;
+        }
+        asdVisCheckbox.onchange = function() {
+            if (asdVisCheckbox.checked) {
+                $.niftyAside('show');
+            } else {
+                $.niftyAside('hide');
+            }
+        };
+
+
+
+        // Fixed Position
+        // =================================================================
+        if(niftyContainer.hasClass('aside-fixed')){
+            asdFixedCheckbox.checked = true;
+        } else{
+            asdFixedCheckbox.checked = false;
+        }
+        asdFixedCheckbox.onchange = function() {
+            if (asdFixedCheckbox.checked) {
+                $.niftyAside('fixedPosition');
+            } else {
+                $.niftyAside('staticPosition');
+            };
+        };
+
+
+        // Floating Aside
+        // =================================================================
+        if(niftyContainer.hasClass('aside-float')){
+            asdFloatCheckbox.checked = true;
+        } else{
+            asdFloatCheckbox.checked = false;
+        }
+        asdFloatCheckbox.onchange = function() {
+            if (asdFloatCheckbox.checked) {
+                niftyContainer.addClass('aside-float');
+            } else {
+                niftyContainer.removeClass('aside-float');
+            };
+            $(window).trigger('resize');
+        };
+
+
+        // Align
+        // =================================================================
+        if(niftyContainer.hasClass('aside-left')){
+            asdPosCheckbox.checked = true;
+        } else{
+            asdPosCheckbox.checked = false;
+        }
+        asdPosCheckbox.onchange = function() {
+            if (asdPosCheckbox.checked) {
+                $.niftyAside('alignLeft');
+            } else {
+                $.niftyAside('alignRight');
+            };
+        };
+
+
+        // Themes
+        // =================================================================
+        if(niftyContainer.hasClass('aside-bright')){
+            asdThemeCheckbox.checked = false;
+        } else{
+            asdThemeCheckbox.checked = true;
+        }
+        asdThemeCheckbox.onchange = function() {
+            if (asdThemeCheckbox.checked) {
+                $.niftyAside('darkTheme');
+            } else {
+                $.niftyAside('brightTheme');
+            };
+        };
+
+
+
+        // COLOR SCHEMES
+        // =================================================================
+        var themeBtn = $('.demo-theme'),
+        changeTheme = function (themeName, type) {
+            var themeCSS = $('#theme'),
+                fileext = '.min.css',
+                filename = 'css/themes/type-' + type + '/' + themeName + fileext;
+
+            if (themeCSS.length) {
+                themeCSS.prop('href', filename);
+            } else {
+                themeCSS = '<link id="theme" href="' + filename + '" rel="stylesheet">';
+                $('head').append(themeCSS);
+            }
+        };
+
+        $('#demo-theme').on('click', '.demo-theme', function (e) {
+            e.preventDefault();
+            var el = $(this);
+            if (el.hasClass('disabled') || el.hasClass('active')) {
+                return false;
+            }
+            changeTheme(el.attr('data-theme'), el.attr('data-type'));
+            themeBtn.removeClass('active');
+            el.addClass('active').tooltip('hide');
+            return false;
+        });
+
+
+        demoSet.on('click', function(e){
+            if (demoSet.hasClass('in')){
+                if ($(e.target).is(demoSet)) demoSet.removeClass('in');
+            }
+        });
+
+        demoSetBtn.on('click', function(){
+            demoSet.toggleClass('in');
+            return false;
+        });
+        $('#demo-btn-close-settings').on('click', function () {
+            demoSetBtn.trigger('click')
+        });
+    };
+});

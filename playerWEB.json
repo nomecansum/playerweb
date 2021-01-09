@@ -1,17 +1,17 @@
 [
-   {
-      "url":"http://cucoweb.ddns.net/login",
-      "id":"123456",
-      "time":"60"
-   },
-   {
-      "url":"http://adminweb.ddns.net",
-      "id":"123457",
-      "time":"60"
-   },
-   {
-      "url":"http://qrclean.myddns.me",
-      "id":"123458",
-      "time":"60"
-   }
+    {
+        "url": "http:\\/\\/qrclean\\/MKD\\/plano\\/241\\/123456",
+        "id": "1",
+        "time": "1"
+    },
+    {
+        "url": "http:\\/\\/qrclean\\/MKD\\/plano\\/131\\/123456",
+        "id": "2",
+        "time": "1"
+    },
+    {
+        "url": "http:\\/\\/qrclean\\/MKD\\/plano\\/61\\/123456",
+        "id": "3",
+        "time": "1"
+    }
 ]

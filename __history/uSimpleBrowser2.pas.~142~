@@ -1,0 +1,894 @@
+// ************************************************************************
+// ***************************** CEF4Delphi *******************************
+// ************************************************************************
+//
+// CEF4Delphi is based on DCEF3 which uses CEF3 to embed a chromium-based
+// browser in Delphi applications.
+//
+// The original license of DCEF3 still applies to CEF4Delphi.
+//
+// For more information about CEF4Delphi visit :
+//         https://www.briskbard.com/index.php?lang=en&pageid=cef
+//
+//        Copyright © 2019 Salvador Diaz Fau. All rights reserved.
+//
+// ************************************************************************
+// ************ vvvv Original license and comments below vvvv *************
+// ************************************************************************
+(*
+ *                       Delphi Chromium Embedded 3
+ *
+ * Usage allowed under the restrictions of the Lesser GNU General Public License
+ * or alternatively the restrictions of the Mozilla Public License 1.1
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ *
+ * Unit owner : Henri Gourvest <hgourvest@gmail.com>
+ * Web site   : http://www.progdigy.com
+ * Repository : http://code.google.com/p/delphichromiumembedded/
+ * Group      : http://groups.google.com/group/delphichromiumembedded
+ *
+ * Embarcadero Technologies, Inc is not permitted to use or redistribute
+ * this source code without explicit permission.
+ *
+ *)
+
+unit uSimpleBrowser2;
+
+{$I cef.inc}
+
+interface
+
+uses
+  {$IFDEF DELPHI16_UP}
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  {$ELSE}
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
+  {$ENDIF}
+  uCEFChromium, uCEFWindowParent, uCEFInterfaces, uCEFConstants, uCEFTypes,
+  uCEFWinControl, AdvAppStyler, AdvMenus, Vcl.Menus, Vcl.ComCtrls,
+  TMS.MQTT.Global, clTcpClient, clTcpClientTls, clHttp,  TMS.MQTT.Client,shellapi,TLHelp32,System.StrUtils,system.dateutils, system.json,
+  AdvGlowButton, clHttpRequest, JvExControls, JvButton, JvTransparentButton,
+  AdvOfficeImage, AdvStyleIF, uCEFChromiumCore, AdvListV, AdvSplitter,
+  System.IOUtils;
+
+type
+  Tmain = class(TForm)
+    Timer1: TTimer;
+    Chromium1: TChromium;
+    CEFWindowParent1: TCEFWindowParent;
+    pop1: TAdvPopupMenu;
+    AdvMenuStyler1: TAdvMenuStyler;
+    AdvFormStyler1: TAdvFormStyler;
+    AdvAppStyler1: TAdvAppStyler;
+    tmr_refresco: TTimer;
+    mqtt2: TTMSMQTTClient;
+    clHttp1: TclHttp;
+    tmr_info: TTimer;
+    tmr_check: TTimer;
+    Debug1: TMenuItem;
+    Cerrar1: TMenuItem;
+    Refrescar1: TMenuItem;
+    Check1: TMenuItem;
+    Infp1: TMenuItem;
+    tmr_inicio: TTimer;
+    req1: TclHttpRequest;
+    btn_popup: TJvTransparentButton;
+    Panel1: TPanel;
+    Recolocarventana1: TMenuItem;
+    img1: TAdvOfficeImage;
+    Ponernegro1: TMenuItem;
+    panelweb: TPanel;
+    panelimg: TPanel;
+    split1: TAdvSplitter;
+    panel_debug: TPanel;
+    mTTY: TRichEdit;
+    playlist: TAdvListView;
+    tmr_play: TTimer;
+    procedure FormShow(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure Chromium1AfterCreated(Sender: TObject; const browser: ICefBrowser);
+    procedure Chromium1BeforePopup(Sender: TObject;
+      const browser: ICefBrowser; const frame: ICefFrame; const targetUrl,
+      targetFrameName: ustring;
+      targetDisposition: TCefWindowOpenDisposition; userGesture: Boolean;
+      const popupFeatures: TCefPopupFeatures; var windowInfo: TCefWindowInfo;
+      var client: ICefClient; var settings: TCefBrowserSettings;
+      var noJavascriptAccess: Boolean; var Result: Boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure Chromium1Close(Sender: TObject; const browser: ICefBrowser;
+    var aAction: TCefCloseBrowserAction);
+    procedure Chromium1BeforeClose(Sender: TObject;
+      const browser: ICefBrowser);
+    procedure Button1Click(Sender: TObject);
+    procedure Chromium1PopupShow(Sender: TObject; const browser: ICefBrowser;
+      show: Boolean);
+    procedure mqtt2ConnectedStatusChanged(ASender: TObject;
+      const AConnected: Boolean; AStatus: TTMSMQTTConnectionStatus);
+    procedure mqtt2PublishReceived(ASender: TObject; APacketID: Word;
+      ATopic: string; APayload: TArray<System.Byte>);
+    procedure mqtt2SubscriptionAcknowledged(ASender: TObject; APacketID: Word;
+      ASubscriptions: TTMSMQTTSubscriptions);
+    procedure mTTYChange(Sender: TObject);
+    procedure btn_popupClick(Sender: TObject);
+    procedure Cerrar1Click(Sender: TObject);
+    procedure Refrescar1Click(Sender: TObject);
+    procedure Check1Click(Sender: TObject);
+    procedure Infp1Click(Sender: TObject);
+    procedure Debug1Click(Sender: TObject);
+    procedure tmr_inicioTimer(Sender: TObject);
+    procedure tmr_refrescoTimer(Sender: TObject);
+    procedure Chromium1LoadStart(Sender: TObject; const browser: ICefBrowser;
+      const frame: ICefFrame; transitionType: Cardinal);
+    procedure tmr_checkTimer(Sender: TObject);
+    procedure Chromium1LoadEnd(Sender: TObject; const browser: ICefBrowser;
+      const frame: ICefFrame; httpStatusCode: Integer);
+    procedure Recolocarventana1Click(Sender: TObject);
+    procedure Ponernegro1Click(Sender: TObject);
+    procedure tmr_playTimer(Sender: TObject);
+    procedure playlistDblClick(Sender: TObject);
+    procedure Chromium1AddressChange(Sender: TObject;
+      const browser: ICefBrowser; const frame: ICefFrame; const url: ustring);
+  protected
+    // Variables to control when can we destroy the form safely
+    FCanClose : boolean;  // Set to True in TChromium.OnBeforeClose
+    FClosing  : boolean;  // Set to True in the CloseQuery event.
+
+    // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
+    procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
+    procedure WMMoving(var aMessage : TMessage); message WM_MOVING;
+    // You also have to handle these two messages to set GlobalCEFApp.OsmodalLoop
+    procedure WMEnterMenuLoop(var aMessage: TMessage); message WM_ENTERMENULOOP;
+    procedure WMExitMenuLoop(var aMessage: TMessage); message WM_EXITMENULOOP;
+
+    procedure BrowserCreatedMsg(var aMessage : TMessage); message CEF_AFTERCREATED;
+    procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
+    procedure myexceptionhandler(Sender: TObject; E: Exception);
+  public
+    { Public declarations }
+    modo_debug: boolean;
+    txt_source      : string;
+    mqtt_packetid2  : Word;
+    token_refresco  : string;
+    nowplay         : integer;
+    procedure reconectar_mqtt;
+    procedure reiniciar_aplicacion;
+    procedure limpiar_logs;
+    Procedure TTY( S : String; tipo_log:integer=1);
+    procedure matar_proceso(proceso: string);
+    procedure cambiar_debug(modo: boolean);
+    function isvalidjson(json: string): Boolean;
+    procedure recargar_URL;
+    function pedir_check(var salida, error :string):boolean;
+    procedure leer_parrilla;
+    procedure playitem(index: Integer);
+
+  end;
+
+var
+  main: Tmain;
+  logerror            : TextFile;
+  aSnapshotHandle     : THandle;
+  aProcessEntry32     : TProcessEntry32;
+
+implementation
+
+{$R *.dfm}
+
+uses
+  uCEFApplication, uCefMiscFunctions, leerconfig;
+// This demo uses a TChromium and a TCEFWindowParent
+
+// Destruction steps
+// =================
+// 1. FormCloseQuery sets CanClose to FALSE calls TChromium.CloseBrowser which triggers the TChromium.OnClose event.
+// 2. TChromium.OnClose sends a CEFBROWSER_DESTROY message to destroy CEFWindowParent1 in the main thread, which triggers the TChromium.OnBeforeClose event.
+// 3. TChromium.OnBeforeClose sets FCanClose := True and sends WM_CLOSE to the form.
+
+function StripHTML(S: string): string;
+var
+  TagBegin, TagEnd, TagLength: integer;
+begin
+  TagBegin := Pos( '<', S);  // search position of first <
+
+  while (TagBegin > 0) do begin  // while there is a < in S
+    TagEnd := Pos('>', S);  // find the matching >
+    TagLength := TagEnd - TagBegin + 1;
+    Delete(S, TagBegin, TagLength); // delete the tag
+    TagBegin:= Pos( '<', S);        // search for next <
+  end;
+
+  Result := S;                // give the result
+end;
+
+procedure Tmain.reconectar_mqtt;
+begin
+
+    mqtt2.Disconnect;
+    mqtt2.Connection.Close;
+    mqtt2.Connect(true);
+end;
+
+procedure Tmain.Refrescar1Click(Sender: TObject);
+begin
+   recargar_URL;
+end;
+
+procedure Tmain.reiniciar_aplicacion;
+var
+    comando     ,
+    parametros  : string;
+begin
+    comando:='"'+application.exename+'"';
+    parametros:='';
+    ShellExecute(handle,'open',PWideChar(comando), PWideChar(parametros),nil,SW_SHOWNORMAL);
+end;
+
+procedure Tmain.cambiar_debug(modo: boolean);
+begin
+   modo_debug:=modo;
+   mtty.Visible:=modo;
+   panel_debug.Visible:=modo;
+   split1.Visible:=modo;
+   if modo then tty('Debug activado');
+
+end;
+
+function Tmain.isvalidjson(json: string): Boolean;
+var
+    jo: TJSONObject;
+begin
+    jo:=nil;
+    isvalidjson:=false;
+    try
+        jo := TJSONObject.ParseJSONValue(json) as TJSONObject;
+        if jo<>nil then
+            isvalidjson:=true;
+    except
+        on e:Exception do
+            isvalidjson:=false;
+    end;
+end;
+
+procedure Tmain.recargar_URL;
+begin
+
+   Chromium1.LoadURL(inioptions.PlayerWEBurl_startup);
+   
+end;
+
+procedure Tmain.Recolocarventana1Click(Sender: TObject);
+begin
+     if (self.Top<>inioptions.PlayerWEBy) OR (self.Left<>inioptions.PlayerWEBx) OR (self.Width<>inioptions.PlayerWEBancho) OR (self.Height<>inioptions.PlayerWEBalto)then
+         begin
+            self.Top:=inioptions.PlayerWEBy;
+            self.Left:=inioptions.PlayerWEBx;
+            self.Width:=inioptions.PlayerWEBancho;
+            self.Height:=inioptions.PlayerWEBalto;
+            tty('Ventana recolocada');
+         end;
+
+
+
+end;
+
+procedure Tmain.matar_proceso(proceso: string);
+var
+  Ret       ,
+  bContinue : BOOL;
+  PrID      ,
+  PrID_este : Integer; // processidentifier
+  Ph        : THandle;   // processhandle
+begin
+     try
+        aSnapshotHandle        := CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        aProcessEntry32.dwSize := SizeOf(aProcessEntry32);
+        bContinue := Process32First(aSnapshotHandle, aProcessEntry32);
+        while Integer(bContinue) <> 0 do
+        begin
+                PrID:=StrToInt('$' + IntToHex(aProcessEntry32.th32ProcessID, 4));
+                if aProcessEntry32.szExeFile=proceso then
+                    begin
+                        Ph := OpenProcess(1, BOOL(0), PrID);
+                        PrID_este:=GetCurrentProcessId;
+                        if PrID_este<>PrID then
+                            begin
+                                Ret := TerminateProcess(Ph, 0);
+                                if Integer(Ret) = 0
+                                   then tty('No se ha podico matar ' + proceso,3)
+                                   else tty('Proceso ' + proceso + ' matado');
+                            end;
+                    end;
+                bContinue := Process32Next(aSnapshotHandle, aProcessEntry32);
+         end;
+         CloseHandle(aSnapshotHandle);
+     Except
+       on e:Exception do
+          begin
+            tty('Error Cerrando procesos previos: ' + e.message,3);
+          end;
+
+     end;
+end;
+
+procedure Tmain.mqtt2ConnectedStatusChanged(ASender: TObject;
+  const AConnected: Boolean; AStatus: TTMSMQTTConnectionStatus);
+begin
+    if (AConnected) then
+    begin
+        // The client is now connected and you can now start interacting with the broker.
+        tty('Conectado con Broker '+mqtt2.BrokerHostName+':'+inttostr(mqtt2.BrokerPort));
+         if  TTMSMQTTClient(ASender).Name='mqtt2' then
+           begin
+                 try
+                   mqtt_packetid2:=mqtt2.Subscribe('/mon/ONCERenderer/control');
+                 except
+                   on e:exception do
+                       begin
+                           tty('Error al suscribir al topic MQTT de control '+e.Message);
+                       end;
+                 end;
+           end;
+    end
+    else
+    begin
+    // The client is NOT connected and any interaction with the broker will result in an exception.
+    case AStatus of
+        csConnectionRejected_InvalidProtocolVersion,
+        csConnectionRejected_InvalidIdentifier,
+        csConnectionRejected_ServerUnavailable:
+        begin
+           tty('Perdida conexion con broker MQTT'); // the connection with the broker is lost
+           TTMSMQTTClient(ASender).Connect(true);
+         end;
+        csConnectionRejected_InvalidCredentials,
+        csConnectionRejected_ClientNotAuthorized:
+           begin
+               tty('Conexion rechazada por el broker');
+           end;
+        csConnectionLost:
+         begin
+           tty('Perdida conexion con broker MQTT'); // the connection with the broker is lost
+            TTMSMQTTClient(ASender).Connect(true);
+         end;
+        csReconnecting:
+        tty('Intentando reconectar con broker MQTT'); // The client is trying to reconnect to the broker
+    end;
+    end;
+
+    //Si despues de n reintentos de conexion al broker no lo conseguimos, reiniciamos server
+end;
+
+procedure Tmain.mqtt2PublishReceived(ASender: TObject; APacketID: Word;
+  ATopic: string; APayload: TArray<System.Byte>);
+var
+    strmensaje: string;
+
+begin
+    if not mqtt2.IsConnected then
+      Exit;
+
+    strmensaje:=TEncoding.UTF8.GetString(APayload);
+    strmensaje:=UpperCase(strmensaje);
+    if strmensaje='REBOOT' then reiniciar_aplicacion;
+    if strmensaje='DEBUG' then modo_debug:=not modo_debug;
+    if strmensaje='RECONNECT_MQTT' then
+        begin
+            reconectar_mqtt;
+        end;
+    if strmensaje='DISCONNECT_MQTT' then
+        begin
+            mqtt2.Disconnect;
+            mqtt2.Connection.Close;
+        end;
+
+    if strmensaje='PROCESS' then //btn_proceso.click;
+
+
+end;
+
+procedure Tmain.mqtt2SubscriptionAcknowledged(ASender: TObject; APacketID: Word;
+  ASubscriptions: TTMSMQTTSubscriptions);
+begin
+    if (APacketID = mqtt_packetid2) and ASubscriptions[0].Accepted then
+    begin
+        tty('Suscrito al topic MQTT de control');
+    end;
+end;
+
+
+procedure Tmain.myexceptionhandler(Sender: TObject; E: Exception);
+begin
+    //TTY('(myexceptionhandler) - Begin',3);
+    //Si existe el fichero c:\debug.txt, saltará la excepción y parará el programa
+    if modo_debug then
+        raise E
+    else
+    begin
+       //si no existe, se mostrará en el cuadro de debug y proseguirá el proceso.
+       tty('Detectada excepcion no controlada provocada por ' + TControl(Sender).Name+': '+E.message,3);
+       
+    end;
+end;
+
+
+procedure Tmain.limpiar_logs;
+var
+    sr: TSearchRec;
+
+begin
+    if (FindFirst(ExtractFilePath(Application.ExeName) + '\logs\*.LOG', faAnyFile, sr) = 0) then
+         begin
+              repeat
+                  if daysbetween(now,FileDateToDateTime(sr.Time)) > 30 then
+                    deletefile(PChar(ExtractFilePath(Application.ExeName) +'\logs\'+ sr.Name));
+              until FindNext(sr) <> 0;
+         end;
+    System.SysUtils.FindClose(sr);
+
+end;
+
+
+procedure Tmain.playitem(index: Integer);
+var
+    url : string;
+
+begin
+    TTY('playitem '+playlist.Items[index].subitems[0]);
+    tmr_play.Enabled:=false;
+    Chromium1.LoadURL(playlist.Items[index].subitems[0]);
+    tmr_play.Interval:=StrToInt(playlist.Items[index].caption)*5*1000;
+    if nowplay>=playlist.Items.count then
+        nowplay:=0
+        else
+            Inc(nowplay);
+    TTY('siguiente '+IntToStr(nowplay));
+    tmr_play.Enabled:=true;
+end;
+
+procedure Tmain.playlistDblClick(Sender: TObject);
+begin
+    playitem(playlist.Selected.Index);
+end;
+
+procedure Tmain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := FCanClose;
+
+  if not(FClosing) then
+    begin
+      FClosing := True;
+      Visible  := False;
+      Chromium1.CloseBrowser(True);
+    end;
+end;
+
+procedure Tmain.leer_parrilla;
+var
+    item           : TListItem;
+    jobj           : TJSONObject;
+    trabajos_json  : TJSONArray;
+    n              : Integer;
+    jv             : TJSONValue;
+    json_str       : string;
+
+begin
+   json_str:=TFile.ReadAllText(ChangeFileExt(application.ExeName,'.json'));
+   //TTY(json_str);
+
+   trabajos_json := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(json_str), 0) as TJSONArray ;
+   //TTY(trabajos_json.ToString);
+
+   for jv in trabajos_json do
+    begin
+        item:=playlist.Items.Add;
+        item.Caption:=jv.GetValue<string>('time');
+        item.SubItems.add(jv.GetValue<string>('url').Replace('\/','/'));
+    end;
+end;
+
+Procedure Tmain.TTY( S : String; tipo_log:integer=1);
+var
+   nombrefic :  string;
+begin
+  try
+
+       if mTTY.lines.count > 2000 then mTTY.Lines.Delete(0);
+
+       case tipo_log of
+            0: mTTY.SelAttributes.Color:=clgray;   //Informativo
+            1: mTTY.SelAttributes.Color:=clblack;  //General
+            2: mTTY.SelAttributes.Color:=clnavy;   //Proceso
+            3: mTTY.SelAttributes.Color:=clred;    //Error
+            4: mTTY.SelAttributes.Color:=clblack;  //Loguear en el fichero de log
+       end;
+
+       if mqtt2.IsConnected then
+         begin
+             //Para el envio al topic de monitorizacion
+             case tipo_log of
+              0,1,2: try mqtt2.Publish('/mon/ONCERenderer/debug','{"debug":"'+s+'","TS":"'+datetimetostr(Now())+'"}');   except end;
+              3: try mqtt2.Publish('/mon/ONCERenderer/log','{"error":"'+s+'","TS":"'+datetimetostr(Now())+'"}');   except end;
+              4: try mqtt2.Publish('/mon/ONCERenderer/log','{"log":"'+s+'","TS":"'+datetimetostr(Now())+'"}');   except end;
+
+             end;
+         end;
+
+       mTTY.lines.add(s);
+
+       if (tipo_log=3) OR (tipo_log=4) then
+        begin
+            s:=stringreplace(s,Chr(13),' ',[rfReplaceAll]);
+            s:=stringreplace(s,Chr(10),'',[rfReplaceAll]);
+            nombrefic := extractfilepath(application.ExeName)+'\logs\'+changefileext(extractfilename(application.ExeName),'')+'_'+formatdatetime('yyyymmdd',now)+'.LOG';
+            //Escritura en el log de errores para la monitorizacion
+            try
+                AssignFile(logerror, nombrefic);
+                if not FileExists(nombrefic) then
+                    Rewrite(logerror)
+                    else
+                        Append(logerror);
+                Writeln(logerror,FormatDateTime('dd/mm/yyyy hh:nn:ss',now)+' - '+s);
+                CloseFile(logerror);
+            except
+
+            end;
+
+        end;
+  except
+    on e:exception do
+    begin
+        //memolog.Lines.Add(FormatDateTime('dd/mm/yyyy hh:nn:ss',now)+' - ERROR EN TTY... NO PUEDO AUTOESCRIBIRME EL LOG.');
+    end;
+  end;
+  //SendMessage(mTTY.Handle, EM_SCROLLCARET, 0, 0);
+
+end;
+
+procedure Tmain.mTTYChange(Sender: TObject);
+begin
+    SendMessage(mTTY.handle, WM_VSCROLL, SB_BOTTOM, 0);
+end;
+
+procedure Tmain.FormCreate(Sender: TObject);
+begin
+  FCanClose := False;
+  FClosing  := False;
+  try
+     forcedirectories(extractfilepath(application.ExeName)+'\LOG');
+     matar_proceso(extractfilename(application.ExeName));
+     if fileexists(changefileext(application.ExeName,'.ini')) then
+         begin
+            inioptions.LoadFromFile(changefileext(application.ExeName,'.ini'));
+            tty('Leida configuracion ');
+         end;
+     //Reposicionamos la ventana
+     self.Top:=inioptions.PlayerWEBy;
+     self.Left:=inioptions.PlayerWEBx;
+     self.Width:=inioptions.PlayerWEBancho;
+     self.Height:=inioptions.PlayerWEBalto;
+     tmr_refresco.Interval:=inioptions.PlayerWEBintervalo_refresh*1000;
+     tmr_check.Interval:=inioptions.PlayerWEBintervalo_check*1000;
+     tmr_info.Interval:=inioptions.PlayerWEBintervalo_info*1000;
+     modo_debug:=fileexists('c:\debug.txt');
+     cambiar_debug(modo_debug);
+
+     //Buscamos JSON de playlist
+     if FileExists(ChangeFileExt(application.ExeName,'.json')) then    //Modo playlist
+        begin
+            leer_parrilla;
+            if playlist.Items.Count>0 then
+                begin
+                    nowplay:=0;
+                    playitem(nowplay);
+                end;
+        end else if tmr_refresco.Interval<>0 then    //Modo URL fija
+          begin
+             tmr_refresco.Enabled:=true;
+             TTY('Modo URL');
+             tty('Activado autorefresco cada '+INTTOSTR(inioptions.PlayerWEBintervalo_refresh)+' seg');
+          end;
+
+
+     token_refresco:='';
+
+
+     if tmr_check.Interval<>0 then
+      begin
+         tmr_check.Enabled:=true;
+         tty('Activado check cambios cada '+INTTOSTR(inioptions.PlayerWEBintervalo_check)+' seg');
+      end;
+     if tmr_info.Interval<>0 then
+      begin
+         tmr_info.Enabled:=true;
+         tty('Activado envio de INFO cada '+INTTOSTR(inioptions.PlayerWEBintervalo_info)+' seg');
+      end;
+
+
+
+      if not modo_debug then
+         main.BorderStyle:=bsnone;
+      panel1.BringToFront;
+   except
+      on e:exception do
+         begin
+            tty('Error al leer la configuracion '+e.Message);
+         end;
+  end;
+
+
+
+end;
+
+procedure Tmain.FormShow(Sender: TObject);
+begin
+  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
+end;
+
+procedure Tmain.Cerrar1Click(Sender: TObject);
+begin
+    self.Close;
+end;
+
+procedure Tmain.Chromium1AddressChange(Sender: TObject;
+  const browser: ICefBrowser; const frame: ICefFrame; const url: ustring);
+begin
+    TTY('Get: '+url);
+end;
+
+procedure Tmain.Chromium1AfterCreated(Sender: TObject; const browser: ICefBrowser);
+begin
+  PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
+end;
+
+procedure Tmain.Check1Click(Sender: TObject);
+begin
+     //Hacer check a ver si ha cambiado la url
+     tmr_checktimer(sender);
+end;
+
+procedure TMain.Chromium1BeforeClose(Sender: TObject;
+  const browser: ICefBrowser);
+begin
+  FCanClose := True;
+  PostMessage(Handle, WM_CLOSE, 0, 0);
+end;
+
+procedure TMain.Chromium1BeforePopup(Sender: TObject;
+  const browser: ICefBrowser; const frame: ICefFrame; const targetUrl,
+  targetFrameName: ustring; targetDisposition: TCefWindowOpenDisposition;
+  userGesture: Boolean; const popupFeatures: TCefPopupFeatures;
+  var windowInfo: TCefWindowInfo; var client: ICefClient;
+  var settings: TCefBrowserSettings; var noJavascriptAccess: Boolean;
+  var Result: Boolean);
+begin
+  // For simplicity, this demo blocks all popup windows and new tabs
+  Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
+end;
+
+procedure TMain.Chromium1Close(Sender: TObject; const browser: ICefBrowser;
+  var aAction: TCefCloseBrowserAction);
+begin
+    try
+       PostMessage(Handle, CEF_DESTROY, 0, 0);
+       aAction :=cbaClose;
+    finally
+    end;
+end;
+
+procedure Tmain.Chromium1LoadEnd(Sender: TObject; const browser: ICefBrowser;
+  const frame: ICefFrame; httpStatusCode: Integer);
+begin
+   btn_popup.Transparent:=false;
+   btn_popup.Transparent:=true;
+end;
+
+procedure Tmain.Chromium1LoadStart(Sender: TObject; const browser: ICefBrowser;
+  const frame: ICefFrame; transitionType: Cardinal);
+begin
+   //tty('Loadstart');
+end;
+
+procedure Tmain.Chromium1PopupShow(Sender: TObject; const browser: ICefBrowser;
+  show: Boolean);
+begin
+   show:=false;
+   pop1.Popup(200,200);
+end;
+
+procedure Tmain.Debug1Click(Sender: TObject);
+begin
+   cambiar_debug(not modo_debug);
+end;
+
+procedure Tmain.BrowserCreatedMsg(var aMessage : TMessage);
+begin
+  //Caption            := 'Simple Browser 2';
+
+end;
+
+procedure Tmain.BrowserDestroyMsg(var aMessage : TMessage);
+begin
+  CEFWindowParent1.Free;
+end;
+
+procedure Tmain.Button1Click(Sender: TObject);
+begin
+   self.Close;
+end;
+
+procedure Tmain.btn_popupClick(Sender: TObject);
+begin
+
+   pop1.Popup(btn_popup.Left,btn_popup.Top);
+end;
+
+procedure Tmain.Infp1Click(Sender: TObject);
+begin
+   //Mabndar info
+   limpiar_logs;
+end;
+
+procedure Tmain.Timer1Timer(Sender: TObject);
+begin
+  Timer1.Enabled := False;
+  if not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized) then
+    Timer1.Enabled := True;
+end;
+
+function Tmain.pedir_check(var salida, error :string):boolean;
+var
+   response : TStrings;
+   url      ,
+   respuesta: string;
+
+begin
+      try
+         clhttp1.Request:=req1;
+        response:=TStringList.Create();
+        clhttp1.Close;
+        clhttp1.Connection.Close(true);
+        url:=inioptions.PlayerWEBurl_base_ws+inioptions.PlayerWEBfuncion_check;
+        error:='';
+         req1.Header.Clear;
+         req1.Header.ExtraFields.Clear;
+         req1.Header.ContentType := 'application/json';
+         //req1.Header.ExtraFields.Add('apikey:'+key);
+         clhttp1.Get(url,response);
+         salida:=response.Text;
+         try
+            if isvalidjson(salida) then
+              begin
+                  pedir_check:=true;
+              end;
+         except
+            on e:exception do
+               begin
+                  error:='Error pidiendo el check '+e.message;
+                  pedir_check:=false;
+               end;
+         end;
+      except
+         on e:exception do
+            tty('Error Pedir check '+e.Message,3);
+
+      end;
+end;
+
+procedure Tmain.Ponernegro1Click(Sender: TObject);
+begin
+   if not panelimg.Visible then
+      begin
+         img1.Picture.LoadFromFile(extractfilepath(application.ExeName)+'negro.png');
+         panelimg.BringToFront;
+         panelweb.hide;
+         panelimg.show;
+      end else
+         begin
+            panelweb.show;
+            panelweb.BringToFront;
+            panelimg.hide;
+            panelimg.sendtoback;
+         end;
+      panel1.BringToFront;
+end;
+
+procedure Tmain.tmr_checkTimer(Sender: TObject);
+var
+   jo          : tjsonobject;
+   salida      ,
+   respuesta   ,
+   mens_error  : string;
+   negro       : integer;
+
+begin
+      try
+         if modo_debug then tty('check '+formatdatetime('hh:nn:ss',now));
+
+         if pedir_check(salida,mens_error) then
+            begin
+               try
+                  if isvalidjson(salida) then
+                    begin
+                        jo:=TJSONObject.ParseJSONValue(salida) as TJSONObject;
+                        respuesta:=jo.GetValue<string>('token');
+                        negro:=jo.GetValue<integer>('mca_negro');
+                        if ((respuesta<>token_refresco) AND (respuesta<>'')  AND (respuesta<>'null') AND (token_refresco<>'')) then
+                           begin
+                              tty('Nuevo token '+respuesta,2);
+                              recargar_URL;
+                           end;
+                        token_refresco:=respuesta;
+                        if negro=1 then
+                           begin
+                              if panelweb.visible then
+                                 ponernegro1.click;
+                           end else
+                              begin
+                                 if panelimg.visible then
+                                    ponernegro1.click;
+                              end;
+                    end;
+               except
+                  on e:exception do
+                     tty('Error evaluando la respuesta del check',3);
+               end;
+            end else
+               tty('Error checkTimer '+mens_error,3);
+      finally
+         recolocarventana1.click;
+      end;
+end;
+
+procedure Tmain.tmr_inicioTimer(Sender: TObject);
+begin
+   recargar_URL;
+   tmr_inicio.Enabled:=false;
+end;
+
+procedure Tmain.tmr_playTimer(Sender: TObject);
+begin
+    playitem(nowplay);
+end;
+
+procedure Tmain.WMMove(var aMessage : TWMMove);
+begin
+  inherited;
+
+  if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
+end;
+
+procedure Tmain.WMMoving(var aMessage : TMessage);
+begin
+  inherited;
+
+  if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
+end;
+
+procedure Tmain.WMEnterMenuLoop(var aMessage: TMessage);
+begin
+  inherited;
+
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := True;
+end;
+
+procedure Tmain.WMExitMenuLoop(var aMessage: TMessage);
+begin
+  inherited;
+
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := False;
+end;
+
+procedure Tmain.tmr_refrescoTimer(Sender: TObject);
+begin
+   tty('Refresco de la URL');
+   Recolocarventana1.Click;
+   recargar_URL;
+end;
+
+end.

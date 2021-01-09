@@ -132,6 +132,8 @@ type
     procedure Ponernegro1Click(Sender: TObject);
     procedure tmr_playTimer(Sender: TObject);
     procedure playlistDblClick(Sender: TObject);
+    procedure Chromium1AddressChange(Sender: TObject;
+      const browser: ICefBrowser; const frame: ICefFrame; const url: ustring);
   protected
     // Variables to control when can we destroy the form safely
     FCanClose : boolean;  // Set to True in TChromium.OnBeforeClose
@@ -154,6 +156,7 @@ type
     mqtt_packetid2  : Word;
     token_refresco  : string;
     nowplay         : integer;
+    modo_play       : integer;
     procedure reconectar_mqtt;
     procedure reiniciar_aplicacion;
     procedure limpiar_logs;
@@ -440,7 +443,12 @@ begin
     TTY('playitem '+playlist.Items[index].subitems[0]);
     tmr_play.Enabled:=false;
     Chromium1.LoadURL(playlist.Items[index].subitems[0]);
-    tmr_play.Interval:=StrToInt(playlist.Items[index].caption)*1000;
+    tmr_play.Interval:=StrToInt(playlist.Items[index].caption)*60*1000;
+    if nowplay>=playlist.Items.count-1 then
+        nowplay:=0
+        else
+            Inc(nowplay);
+    //TTY('siguiente '+IntToStr(nowplay));
     tmr_play.Enabled:=true;
 end;
 
@@ -481,7 +489,7 @@ begin
     begin
         item:=playlist.Items.Add;
         item.Caption:=jv.GetValue<string>('time');
-        item.SubItems.add(jv.GetValue<string>('url'));
+        item.SubItems.add(jv.GetValue<string>('url').Replace('\/','/'));
     end;
 end;
 
@@ -575,6 +583,7 @@ begin
      if FileExists(ChangeFileExt(application.ExeName,'.json')) then    //Modo playlist
         begin
             leer_parrilla;
+            modo_play:=2;
             if playlist.Items.Count>0 then
                 begin
                     nowplay:=0;
@@ -584,6 +593,7 @@ begin
           begin
              tmr_refresco.Enabled:=true;
              TTY('Modo URL');
+             modo_play:=1;
              tty('Activado autorefresco cada '+INTTOSTR(inioptions.PlayerWEBintervalo_refresh)+' seg');
           end;
 
@@ -626,6 +636,12 @@ end;
 procedure Tmain.Cerrar1Click(Sender: TObject);
 begin
     self.Close;
+end;
+
+procedure Tmain.Chromium1AddressChange(Sender: TObject;
+  const browser: ICefBrowser; const frame: ICefFrame; const url: ustring);
+begin
+    TTY('Get: '+url);
 end;
 
 procedure Tmain.Chromium1AfterCreated(Sender: TObject; const browser: ICefBrowser);
@@ -808,7 +824,8 @@ begin
                         if ((respuesta<>token_refresco) AND (respuesta<>'')  AND (respuesta<>'null') AND (token_refresco<>'')) then
                            begin
                               tty('Nuevo token '+respuesta,2);
-                              recargar_URL;
+                              if modo_play=1 then
+                                recargar_URL;
                            end;
                         token_refresco:=respuesta;
                         if negro=1 then
@@ -834,7 +851,8 @@ end;
 
 procedure Tmain.tmr_inicioTimer(Sender: TObject);
 begin
-   recargar_URL;
+   if modo_play=1 then
+    recargar_URL;
    tmr_inicio.Enabled:=false;
 end;
 
